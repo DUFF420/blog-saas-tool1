@@ -25,14 +25,7 @@ export function ExportDialog() {
             // or we filter client side if the backend sends everything (less efficient but safer for now if we can't change signature easily).
             // Actually, I WILL update usage.
 
-            const result = await exportAllData({
-                includeContext,
-                statuses: [
-                    includePublished ? 'published' : '',
-                    includeDrafts ? 'drafted' : '',
-                    includeIdeas ? 'idea' : '',
-                ].filter(Boolean) as string[]
-            });
+
 
             const result = await exportAllData({
                 includeContext,
