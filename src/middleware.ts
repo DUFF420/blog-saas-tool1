@@ -20,26 +20,8 @@ export default clerkMiddleware(async (auth, req) => {
             return NextResponse.redirect(new URL('/sign-in', req.url));
         }
 
-        const sessionCookie = req.cookies.get('site_access_token');
-
-        // ✅ SECURITY: Detect server actions - don't interfere with POST requests
-        const isServerAction = req.method === 'POST' &&
-            req.headers.get('next-action') !== null;
-
-        // Only validate and redirect for normal navigation (not server actions)
-        if (!isServerAction) {
-            // If cookie missing or mismatched, redirect to access page
-            if (!sessionCookie || sessionCookie.value !== userId) {
-                const response = NextResponse.redirect(new URL('/access', req.url));
-
-                // ✅ SECURITY: Clean up invalid/mismatched cookies
-                if (sessionCookie && sessionCookie.value !== userId) {
-                    response.cookies.delete('site_access_token');
-                }
-
-                return response;
-            }
-        }
+        // REMOVED Custom 'site_access_token' check to prevent Redirect Loops.
+        // Authorization is now strictly handled by RootLayout (Server Component).
     }
 });
 

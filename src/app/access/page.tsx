@@ -12,18 +12,20 @@ export default function AccessPage() {
     const [isBanned, setIsBanned] = useState(false);
     const router = useRouter();
 
+    const [isAuthorized, setIsAuthorized] = useState(false);
+
     useEffect(() => {
         const checkStatus = async () => {
             const status = await checkAccessStatus();
             if (status.isBanned) {
                 setIsBanned(true);
             } else if (status.hasAccess) {
-                // Auto-redirect if already authorized
-                router.push('/');
+                // DON'T Auto-redirect (Prevents Loops). Just show the button.
+                setIsAuthorized(true);
             }
         };
         checkStatus();
-    }, [router]);
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -83,6 +85,30 @@ export default function AccessPage() {
                                 Sign Out
                             </a>
                         </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (isAuthorized) {
+        return (
+            <div className="flex flex-col items-center justify-center p-4 min-h-screen bg-slate-950">
+                <div className="w-full max-w-md bg-green-950/20 rounded-2xl shadow-xl overflow-hidden border border-green-900/50 backdrop-blur-sm">
+                    <div className="p-8 text-center">
+                        <div className="mx-auto bg-green-900/20 ring-1 ring-green-500/50 rounded-full w-20 h-20 flex items-center justify-center mb-6 shadow-lg shadow-green-900/20">
+                            <ShieldCheck className="text-green-500 w-10 h-10" />
+                        </div>
+                        <h1 className="text-2xl font-bold text-green-500 mb-2">Access Granted</h1>
+                        <p className="text-green-200/80 mb-8 text-sm leading-relaxed">
+                            You are already authorized.
+                        </p>
+                        <button
+                            onClick={() => window.location.href = '/'}
+                            className="w-full bg-green-600 hover:bg-green-500 text-white font-bold text-lg py-4 rounded-xl transition-all shadow-lg active:scale-[0.98]"
+                        >
+                            Return to Dashboard
+                        </button>
                     </div>
                 </div>
             </div>
