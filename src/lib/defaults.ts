@@ -47,5 +47,8 @@ export const createDefaultContext = (): ProjectContext => ({
         clusters: [],
     },
     ideas: [],
+    siteStructure: {
+        internalLinks: [],
+    },
     globalContext: "",
 });

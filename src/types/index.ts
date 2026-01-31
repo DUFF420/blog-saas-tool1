@@ -55,6 +55,9 @@ export type ProjectContext = {
     };
     ideas: string[]; // Raw ideas, keywords, topics
     globalContext: string; // High level overview/background
+    siteStructure: {
+        internalLinks: { url: string; anchor: string; equity: number }[];
+    };
     wordpressNotes?: string; // User notes for the coming soon WP page
 };
 

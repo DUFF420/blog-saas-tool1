@@ -1,2 +1,35 @@
-⚠ Port 3000 is in use by process 21362, using available port 3001 instead.
-⨯ Unable to acquire lock at /Users/lukeduff/Desktop/SaaS/Blog-SaS-Tool1/.next/dev/lock, is another instance of next dev running?
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+⨯ Error: Could not find the 'cluster' column of 'posts' in the schema cache
+    at savePostDB (src/actions/planner-db.ts:82:26)
+    at async savePost (src/actions/planner.ts:28:12)
+  80 |             .update(updateData)
+  81 |             .eq('id', post.id);
+> 82 |         if (error) throw new Error(error.message);
+     |                          ^
+  83 |     } else {
+  84 |         // Insert
+  85 |         const { error } = await supabase {
+  digest: '1519608965'
+}
+⨯ Error: Could not find the 'cluster' column of 'posts' in the schema cache
+    at savePostDB (src/actions/planner-db.ts:82:26)
+    at async savePost (src/actions/planner.ts:28:12)
+  80 |             .update(updateData)
+  81 |             .eq('id', post.id);
+> 82 |         if (error) throw new Error(error.message);
+     |                          ^
+  83 |     } else {
+  84 |         // Insert
+  85 |         const { error } = await supabase {
+  digest: '1519608965'
+}
+DB Error fetch projects { code: 'PGRST303', details: null, hint: null, message: 'JWT expired' }
+DB Error fetch projects { code: 'PGRST303', details: null, hint: null, message: 'JWT expired' }
+DB Error fetch projects { code: 'PGRST303', details: null, hint: null, message: 'JWT expired' }
+DB Error fetch projects { code: 'PGRST303', details: null, hint: null, message: 'JWT expired' }
+DB Error fetch projects { code: 'PGRST303', details: null, hint: null, message: 'JWT expired' }
+DB Error fetch projects { code: 'PGRST303', details: null, hint: null, message: 'JWT expired' }
+DB Error fetch projects { code: 'PGRST303', details: null, hint: null, message: 'JWT expired' }
+DB Error fetch projects { code: 'PGRST303', details: null, hint: null, message: 'JWT expired' }
+DB Error fetch projects { code: 'PGRST303', details: null, hint: null, message: 'JWT expired' }
+DB Error fetch projects { code: 'PGRST303', details: null, hint: null, message: 'JWT expired' }
