@@ -1,0 +1,127 @@
+{
+  "domainInfo": {
+    "urls": [
+      "https://www.dbtreeandgarden.co.uk/",
+      "https://www.dbtreeandgarden.co.uk/privacy-policy/",
+      "https://www.dbtreeandgarden.co.uk/cookie-policy-uk/",
+      "https://www.dbtreeandgarden.co.uk/machine-hire/",
+      "https://www.dbtreeandgarden.co.uk/portfolio/",
+      "https://www.dbtreeandgarden.co.uk/contact/",
+      "https://www.dbtreeandgarden.co.uk/faq/",
+      "https://www.dbtreeandgarden.co.uk/industries-we-serve/",
+      "https://www.dbtreeandgarden.co.uk/about-us/",
+      "https://www.dbtreeandgarden.co.uk/all-services/",
+      "https://www.dbtreeandgarden.co.uk/commercial/",
+      "https://www.dbtreeandgarden.co.uk/large-scale-site-land-clearance/",
+      "https://www.dbtreeandgarden.co.uk/tree-surgery-hedge-work/",
+      "https://www.dbtreeandgarden.co.uk/gardening-service/",
+      "https://www.dbtreeandgarden.co.uk/grounds-maintenance-clearance/",
+      "https://www.dbtreeandgarden.co.uk/blog/",
+      "https://www.dbtreeandgarden.co.uk/grounds-maintenance/grounds-maintenance-saves-time-money/",
+      "https://www.dbtreeandgarden.co.uk/site-clearance/professional-site-clearance-sunderland/",
+      "https://www.dbtreeandgarden.co.uk/machine-hire/operated-machinery-hire-sunderland/",
+      "https://www.dbtreeandgarden.co.uk/grounds-maintenance/commercial-site-clearance-north-east-uk/",
+      "https://www.dbtreeandgarden.co.uk/uncategorized/winter-grounds-maintenance-factories-north-east/",
+      "https://www.dbtreeandgarden.co.uk/uncategorized/industrial-site-clearance-north-east-uk-winter/",
+      "https://www.dbtreeandgarden.co.uk/grounds-maintenance/industrial-yard-clearance-north-east-grounds-maintenance/",
+      "https://www.dbtreeandgarden.co.uk/gardening/gardening-services-sunderland-trusted-local-team/"
+    ],
+    "titles": [],
+    "h1s": [],
+    "services": [],
+    "sitemapUrl": "https://www.dbtreeandgarden.co.uk/post-sitemap.xml",
+    "lastSitemapFetch": "2026-01-30T08:10:53.771Z"
+  },
+  "brand": {
+    "tone": "Tone characteristics:\n\nPlainspoken, no jargon\n\nTrust-led and experienced\n\nLocal and grounded\n\nCommercially credible\n\nReassuring for domestic customers\n\nAvoid salesy language, fluff, or “marketing talk”.",
+    "writingStyle": "Writing Style Rules\n\nUse short paragraphs and clear headings\n\nWrite in UK English\n\nSpeak directly to the reader (“you”, “your site”, “your property”)\n\nFocus on problems → solutions → outcomes\n\nPrioritise clarity over creativity\n\nInclude subtle CTAs (request a quote, arrange a site visit, call us)\n\nAvoid over-promising or guarantees",
+    "examples": [],
+    "doNots": [],
+    "readingLevel": "Grade 8"
+  },
+  "business": {
+    "services": [
+      "Commercial grounds maintenance",
+      "",
+      "Large-scale site clearance",
+      "",
+      "Tree surgery & hedge management",
+      "",
+      "Machinery hire",
+      "",
+      "Ongoing maintenance contracts"
+    ],
+    "targetAudience": "Target Audience\n\nPrimary (Commercial focus):\n\nProperty managers\n\nFacilities managers\n\nBusiness parks & industrial estates\n\nSchools, colleges & education sites\n\nCouncils & public sector\n\nDevelopers & construction firms\n\nLandowners & estate managers\n\nSecondary (Domestic support):\n\nHomeowners with large gardens\n\nDomestic tree work & clearance\n\nOne-off or ongoing maintenance",
+    "painPoints": [
+      "Pain Points (one per line)",
+      "",
+      "Grounds and trees becoming unsafe or unmanaged",
+      "",
+      "Struggling to find reliable contractors who turn up",
+      "",
+      "Needing work completed safely, professionally, and on schedule",
+      "",
+      "Poor communication from previous contractors",
+      "",
+      "Overgrown or neglected commercial sites affecting appearance",
+      "",
+      "Compliance and safety concerns (trees, access, visibility)",
+      "",
+      "Needing ongoing maintenance rather than one-off jobs"
+    ],
+    "desiredActions": [
+      "Request a site visit",
+      "",
+      "Get a commercial quote",
+      "",
+      "Book ongoing maintenance",
+      "",
+      "Call to discuss requirements",
+      "",
+      "Submit an enquiry form",
+      "",
+      "Arrange a one-off or contract job"
+    ],
+    "locations": [
+      "Sunderland",
+      "",
+      "Washington",
+      "",
+      "South Shields",
+      "",
+      "Gateshead",
+      "",
+      "Newcastle",
+      "",
+      "Durham",
+      "",
+      "Boldon",
+      "",
+      "North East England"
+    ]
+  },
+  "seoRules": {
+    "hTagHierarchy": true,
+    "shortIntro": true,
+    "scannableLayout": true,
+    "generateTLDR": true,
+    "semanticKeywords": true,
+    "includeImage": true,
+    "globalCTA": "Subscribe for more updates.",
+    "ctaLink": "<a href=\"https://www.dbtreeandgarden.co.uk/#elementor-action:action=popup:open&settings=popup:1453\">",
+    "ctaGoal": "Request a Free Quote "
+  },
+  "siteStructure": {
+    "priorityPages": [],
+    "internalLinks": []
+  },
+  "keywords": {
+    "target": [],
+    "negative": [],
+    "clusters": []
+  },
+  "globalContext": "DB Tree & Garden Services is a North East–based grounds maintenance and tree surgery business with a strong focus on commercial and large-scale work. The company works with businesses, landowners, and organisations across Sunderland and the wider North East, providing reliable, professional, and safety-focused services.\n\nThe website and blog content should position the business as:\n\nExperienced and dependable\n\nCommercially capable\n\nLocally trusted\n\nEasy to deal with\n\nSuitable for both contract and one-off work\n\nBlog content should support:\n\nLocal SEO\n\nService authority\n\nTrust and credibility\n\nEnquiry generation (not just traffic)",
+  "styling": {
+    "referenceHtml": "<style>\n  /* ===== DB Blog \"Gold Standard\" Styling ===== */\n\n  /* Body copy spacing + rhythm */\n  .db-blog p { line-height: 1.7; margin-bottom: 1.2em; }\n\n  /* Section headings (H4) + underline accent */\n  .db-blog h4 {\n    font-size: 22px;\n    line-height: 1.4;\n    font-weight: 600;\n    color: #244e2c;\n    margin-top: 2.2em;\n    margin-bottom: 0.6em;\n    position: relative;\n  }\n  .db-blog h4::after {\n    content: \"\";\n    display: block;\n    width: 45px;\n    height: 3px;\n    background: #2d5a32;\n    border-radius: 3px;\n    margin-top: 6px;\n  }\n\n  /* Lists */\n  .db-blog ul { margin: 0 0 1.5em 1.2em; line-height: 1.7; }\n\n  /* Callout / highlight panel */\n  .db-blog .callout {\n    background: #f4f8f4;\n    border-left: 4px solid #2d5a32;\n    padding: 16px;\n    border-radius: 8px;\n    margin: 24px 0;\n  }\n\n  /* Images */\n  .db-blog img { width: 100%; border-radius: 10px; margin: 25px 0; }\n\n  /* End CTA block */\n  .db-blog .cta {\n    background: #2d5a32;\n    color: #fff;\n    padding: 40px 30px;\n    border-radius: 10px;\n    text-align: center;\n    margin-top: 60px;\n  }\n  .db-blog .cta a {\n    display: inline-block;\n    margin-top: 14px;\n    background: #fff;\n    color: #2d5a32;\n    padding: 10px 20px;\n    border-radius: 5px;\n    text-decoration: none;\n    font-weight: 600;\n  }\n</style>\n\n<div class=\"db-blog\">\n\n  <!-- Content title (keep this class name if your theme expects it) -->\n  <h2 class=\"bb-post-title\">Example Blog Title Using DB Styling</h2>\n\n  <!-- Intro paragraph -->\n  <p>\n    This is an example intro paragraph. Use it to set context, mention the service + location naturally, and clearly state the benefit to the reader in plain language.\n  </p>\n\n  <!-- Section heading + paragraph -->\n  <h4>Example Section Heading</h4>\n  <p>\n    This is a short section paragraph. Keep sentences clear and practical. Explain what you do, why it matters, and what outcome the reader gets.\n  </p>\n\n  <!-- Callout -->\n  <div class=\"callout\">\n    <strong>Quick takeaway:</strong> Use this callout to highlight the key point, benefit, or “what clients care about most”.\n  </div>\n\n  <!-- Optional list -->\n  <h4>Example List Section</h4>\n  <ul>\n    <li><strong>Point one:</strong> short benefit-led line.</li>\n    <li><strong>Point two:</strong> short benefit-led line.</li>\n    <li><strong>Point three:</strong> short benefit-led line.</li>\n  </ul>\n\n  <!-- Optional image (only include if your generator adds images) -->\n  <!-- <img src=\"PASTE_IMAGE_URL_HERE\" alt=\"Describe the image briefly\"> -->\n\n  <!-- CTA -->\n  <div class=\"cta\">\n    <h4 style=\"color:#fff;margin-top:0;\">Ready to Get a Quote?</h4>\n    <p>\n      Add one short CTA paragraph here. Keep it direct: what they get + what to do next.\n    </p>\n\n    <!-- Best practice: full URL + popup action (avoid non-www redirects) -->\n    <a href=\"https://www.dbtreeandgarden.co.uk/#elementor-action:action=popup:open&settings=popup:POPUP_ID\">\n      Request a Free Quote\n    </a>\n\n    <!-- If you prefer your encoded version (works inline), swap the href to your encoded string -->\n    <!-- <a href=\"#elementor-action%3Aaction%3Dpopup%3Aopen%26settings%3DeyJpZCI6IjE0NTMiLCJ0b2dnbGUiOmZhbHNlfQ%3D%3D\">Request a Free Quote</a> -->\n  </div>\n\n</div>\n"
+  }
+}
