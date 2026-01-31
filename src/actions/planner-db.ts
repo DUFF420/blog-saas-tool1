@@ -7,15 +7,21 @@ import { revalidatePath } from 'next/cache';
 
 // --- PLANNER (POSTS) ---
 
+import { verifyProjectAccessDB } from './project-db'; // Import Helper
+
 export async function getPostsDB(projectId: string): Promise<BlogPost[]> {
     const { userId } = await auth();
     if (!userId) return [];
+
+    // SECURITY CHECK
+    const hasAccess = await verifyProjectAccessDB(projectId);
+    if (!hasAccess) return [];
 
     const supabase = await createClerkSupabaseClient();
     const { data, error } = await supabase
         .from('posts')
         .select('*')
-        .eq('project_id', projectId)
+        .eq('project_id', projectId) // Filter by project
         .order('created_at', { ascending: false });
 
     if (error) {
@@ -23,7 +29,6 @@ export async function getPostsDB(projectId: string): Promise<BlogPost[]> {
         return [];
     }
 
-    // Map DB snake_case to CamelCase
     return data.map(p => ({
         id: p.id,
         projectId: p.project_id,
@@ -60,10 +65,11 @@ export async function getPostByIdDB(postId: string): Promise<BlogPost | null> {
         .eq('id', postId)
         .single();
 
-    if (error || !p) {
-        if (error) console.error("Error fetching post by ID:", error);
-        return null;
-    }
+    if (error || !p) return null;
+
+    // SECURITY CHECK: Ensure user owns the project this post belongs to
+    const hasAccess = await verifyProjectAccessDB(p.project_id);
+    if (!hasAccess) return null;
 
     return {
         id: p.id,
@@ -94,6 +100,10 @@ export async function savePostDB(post: BlogPost) {
     const { userId } = await auth();
     if (!userId) throw new Error("Unauthorized");
 
+    // SECURITY CHECK
+    const hasAccess = await verifyProjectAccessDB(post.projectId);
+    if (!hasAccess) throw new Error("Unauthorized to access this project");
+
     const supabase = await createClerkSupabaseClient();
     const updateData: any = {
         project_id: post.projectId,
@@ -114,7 +124,6 @@ export async function savePostDB(post: BlogPost) {
         updated_at: new Date().toISOString()
     };
 
-    // Use UPSERT to handle both Create (with client-generated ID) and Update
     const { error } = await supabase
         .from('posts')
         .upsert({
@@ -132,6 +141,10 @@ export async function savePostDB(post: BlogPost) {
 export async function savePostContentDB(postId: string, content: string, project_id: string) {
     const { userId } = await auth();
     if (!userId) throw new Error("Unauthorized");
+
+    // SECURITY CHECK
+    const hasAccess = await verifyProjectAccessDB(project_id);
+    if (!hasAccess) throw new Error("Unauthorized");
 
     const supabase = await createClerkSupabaseClient();
     const { error } = await supabase
@@ -153,11 +166,16 @@ export async function getPostContentDB(postId: string): Promise<string | null> {
     const supabase = await createClerkSupabaseClient();
     const { data, error } = await supabase
         .from('posts')
-        .select('content')
+        .select('*') // Need project_id to verify
         .eq('id', postId)
         .single();
 
     if (error || !data) return null;
+
+    // SECURITY CHECK
+    const hasAccess = await verifyProjectAccessDB(data.project_id);
+    if (!hasAccess) return null;
+
     return data.content;
 }
 
@@ -165,12 +183,16 @@ export async function deletePostDB(projectId: string, postId: string) {
     const { userId } = await auth();
     if (!userId) throw new Error("Unauthorized");
 
+    // SECURITY CHECK
+    const hasAccess = await verifyProjectAccessDB(projectId);
+    if (!hasAccess) throw new Error("Unauthorized");
+
     const supabase = await createClerkSupabaseClient();
     const { error } = await supabase
         .from('posts')
         .delete()
         .eq('id', postId)
-        .eq('project_id', projectId); // Security check
+        .eq('project_id', projectId);
 
     if (error) throw new Error(error.message);
 

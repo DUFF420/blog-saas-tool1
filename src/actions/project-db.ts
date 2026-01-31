@@ -34,6 +34,7 @@ export async function getProjectsDB(): Promise<Project[]> {
         name: p.name,
         domain: p.domain || '',
         createdAt: p.created_at,
+        updatedAt: p.updated_at,
         userId: p.user_id
     }));
 }
@@ -227,4 +228,12 @@ export async function getAllUserDataDB(options: { includeContext: boolean; statu
     }
 
     return result;
+}
+
+export async function verifyProjectAccessDB(projectId: string): Promise<boolean> {
+    const { userId } = await auth();
+    if (!userId) return false;
+    const supabase = await createClerkSupabaseClient();
+    const { data } = await supabase.from('projects').select('id').eq('id', projectId).eq('user_id', userId).single();
+    return !!data;
 }
