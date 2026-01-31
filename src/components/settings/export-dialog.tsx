@@ -31,8 +31,15 @@ export function ExportDialog() {
                     includePublished ? 'published' : '',
                     includeDrafts ? 'drafted' : '',
                     includeIdeas ? 'idea' : '',
-                    // Include others by default or strictly based on checkbox?
-                    // Let's simplified: 
+                ].filter(Boolean) as string[]
+            });
+
+            const result = await exportAllData({
+                includeContext,
+                statuses: [
+                    includePublished ? 'published' : '',
+                    includeDrafts ? 'drafted' : '',
+                    includeIdeas ? 'idea' : '',
                 ].filter(Boolean) as string[]
             });
 

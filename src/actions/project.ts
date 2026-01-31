@@ -10,7 +10,8 @@ import {
     getProjectContextDB,
     saveProjectContextDB,
     updateProjectDB,
-    deleteProjectDB as deleteProjectDBImpl
+    deleteProjectDB as deleteProjectDBImpl,
+    getAllUserDataDB
 } from './project-db';
 import { ProjectContext } from '@/types';
 import { XMLParser } from 'fast-xml-parser';
@@ -85,6 +86,14 @@ export async function deleteProject(projectId: string) {
     return await deleteProjectDBImpl(projectId);
 }
 
-export async function exportAllData(options?: any) {
-    return { success: false, error: "Export temporarily disabled during SaaS migration.", data: undefined };
+// --- 3. EXPORT ---
+
+export async function exportAllData(options: { includeContext: boolean, statuses: string[] }) {
+    try {
+        const data = await getAllUserDataDB(options);
+        return { success: true, data: JSON.stringify(data, null, 2) };
+    } catch (e: any) {
+        console.error("Export error", e);
+        return { success: false, error: e.message };
+    }
 }

@@ -171,3 +171,60 @@ export async function saveProjectContextDB(projectId: string, context: ProjectCo
     revalidatePath('/context');
     return { success: true };
 }
+
+// --- EXPORT (NEW) ---
+
+export async function getAllUserDataDB(options: { includeContext: boolean; statuses: string[] }) {
+    const { userId } = await auth();
+    if (!userId) throw new Error("Unauthorized");
+
+    const supabase = await createClerkSupabaseClient();
+
+    // 1. Get All Projects
+    const { data: projects, error } = await supabase
+        .from('projects')
+        .select('*')
+        .eq('user_id', userId);
+
+    if (error || !projects) return [];
+
+
+    const result = [];
+
+    for (const proj of projects) {
+        const projData: any = {
+            id: proj.id,
+            name: proj.name,
+            domain: proj.domain,
+            created_at: proj.created_at
+        };
+
+        // 2. Fetch Context
+        if (options.includeContext) {
+            const { data: ctx } = await supabase
+                .from('project_settings')
+                .select('context')
+                .eq('project_id', proj.id)
+                .single();
+            projData.context = ctx?.context || null;
+        }
+
+        // 3. Fetch Posts
+        // Map UI statuses to DB statuses (e.g. 'drafted' might include 'approved')
+        // For simplicity, we just filter by the list provided.
+        if (options.statuses.length > 0) {
+            // Expand statuses just in case (e.g. if 'drafted' is selected, maybe include 'approved' too?)
+            // Or rely on frontend to send correct list.
+            const { data: posts } = await supabase
+                .from('posts')
+                .select('*')
+                .eq('project_id', proj.id)
+                .in('status', options.statuses);
+            projData.posts = posts || [];
+        }
+
+        result.push(projData);
+    }
+
+    return result;
+}

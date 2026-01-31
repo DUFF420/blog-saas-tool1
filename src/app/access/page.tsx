@@ -17,10 +17,13 @@ export default function AccessPage() {
             const status = await checkAccessStatus();
             if (status.isBanned) {
                 setIsBanned(true);
+            } else if (status.hasAccess) {
+                // Auto-redirect if already authorized
+                router.push('/');
             }
         };
         checkStatus();
-    }, []);
+    }, [router]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
