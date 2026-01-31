@@ -8,7 +8,8 @@ import {
     savePostDB,
     deletePostDB,
     getPostContentDB,
-    savePostContentDB
+    savePostContentDB,
+    getPostByIdDB
 } from './planner-db';
 import { BlogPost, BlogPostStatus } from '@/types';
 import { PromptBuilder } from '@/lib/generation/prompt-builder';
@@ -238,8 +239,7 @@ export async function generateBlogIdeasAction(projectId: string, count: number, 
 
 // Helper to get a single post by ID (scanning projects for now)
 export async function getPostById(postId: string): Promise<BlogPost | null> {
-    // DB Scan is expensive. Return null or implement specific query if needed.
-    return null;
+    return await getPostByIdDB(postId);
 }
 
 // Helper to read content file/db

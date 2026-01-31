@@ -9,27 +9,32 @@ import { revalidatePath } from 'next/cache';
 
 export async function getProjectsDB(): Promise<Project[]> {
     const { userId } = await auth();
+    console.log("[getProjectsDB] Clerk User ID:", userId);
+
     if (!userId) return [];
 
     const supabase = await createClerkSupabaseClient();
+
+    // Explicitly select only necessary fields and filter by user_id
     const { data, error } = await supabase
         .from('projects')
         .select('*')
-        .eq('user_id', userId) // Security: Double check (RLS + Filter)
-        .order('updated_at', { ascending: false });
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
 
     if (error) {
-        console.error("DB Error fetch projects", error);
+        console.error("[getProjectsDB] Supabase Error:", error);
         return [];
     }
 
-    // Map snake_case DB to camelCase Types
+    console.log(`[getProjectsDB] Found ${data?.length} projects for user ${userId}`);
+
     return data.map(p => ({
         id: p.id,
         name: p.name,
-        domain: p.domain,
+        domain: p.domain || '',
         createdAt: p.created_at,
-        updatedAt: p.updated_at
+        userId: p.user_id
     }));
 }
 
@@ -100,17 +105,23 @@ export async function updateProjectDB(projectId: string, data: { name: string, d
 
 export async function deleteProjectDB(projectId: string) {
     const { userId } = await auth();
+    console.log(`[deleteProjectDB] User: ${userId}, Project: ${projectId}`);
+
     if (!userId) throw new Error("Unauthorized");
 
     const supabase = await createClerkSupabaseClient();
-    // Cascade delete in Postgres handles child tables (posts, settings)
+
+    // IMPORTANT: RLS will block this if the user doesn't own the project!
     const { error } = await supabase
         .from('projects')
         .delete()
         .eq('id', projectId)
         .eq('user_id', userId);
 
-    if (error) throw new Error(error.message);
+    if (error) {
+        console.error("[deleteProjectDB] Failed:", error);
+        throw new Error(error.message);
+    }
 
     revalidatePath('/');
     return { success: true };

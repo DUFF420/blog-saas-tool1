@@ -49,6 +49,47 @@ export async function getPostsDB(projectId: string): Promise<BlogPost[]> {
     }));
 }
 
+export async function getPostByIdDB(postId: string): Promise<BlogPost | null> {
+    const { userId } = await auth();
+    if (!userId) return null;
+
+    const supabase = await createClerkSupabaseClient();
+    const { data: p, error } = await supabase
+        .from('posts')
+        .select('*')
+        .eq('id', postId)
+        .single();
+
+    if (error || !p) {
+        if (error) console.error("Error fetching post by ID:", error);
+        return null;
+    }
+
+    return {
+        id: p.id,
+        projectId: p.project_id,
+        topic: p.topic,
+        status: p.status as BlogPostStatus || 'idea',
+        contentPath: `db:${p.id}`,
+
+        imagePath: p.image_path || '/placeholder-image.png',
+        seoTitle: p.seo_title || '',
+        metaDescription: p.meta_description || '',
+        primaryKeyword: p.primary_keyword || '',
+        secondaryKeywords: p.secondary_keywords || [],
+        searchIntent: p.search_intent || 'Informational',
+        contentAngle: p.content_angle || 'How-to',
+        targetInternalLinks: p.target_internal_links || [],
+        cluster: p.cluster || '',
+        priorityScore: p.priority_score || 0,
+        notes: p.notes || '',
+        generateImage: p.generate_image || false,
+        scheduledDate: p.scheduled_date,
+        createdAt: p.created_at,
+        updatedAt: p.updated_at
+    };
+}
+
 export async function savePostDB(post: BlogPost) {
     const { userId } = await auth();
     if (!userId) throw new Error("Unauthorized");
@@ -73,20 +114,15 @@ export async function savePostDB(post: BlogPost) {
         updated_at: new Date().toISOString()
     };
 
-    if (post.id) {
-        // Update
-        const { error } = await supabase
-            .from('posts')
-            .update(updateData)
-            .eq('id', post.id);
-        if (error) throw new Error(error.message);
-    } else {
-        // Insert
-        const { error } = await supabase
-            .from('posts')
-            .insert(updateData);
-        if (error) throw new Error(error.message);
-    }
+    // Use UPSERT to handle both Create (with client-generated ID) and Update
+    const { error } = await supabase
+        .from('posts')
+        .upsert({
+            id: post.id,
+            ...updateData
+        });
+
+    if (error) throw new Error(error.message);
 
     revalidatePath('/planner');
     return { success: true };

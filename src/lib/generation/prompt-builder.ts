@@ -108,6 +108,14 @@ You must follow this exact flow:
 ### DECISION FRAMEWORK RULES
     - **If Content Angle is "Comparison" or "Best-for-X"**:
         - YOU MUST include a markdown table mapping "Scenario/Problem" to "Recommended Solution/Machine".
+    - **If Content Angle is "News-Update"**:
+        - Focus on "What Changed", "Why it Matters", and "What to do next".
+        - Use a "Key Updates" bullet list at the top.
+    - **If Content Angle is "Opinion"**:
+        - Take a clear, distinctive stance aligned with the brand tone.
+        - Use persuasive arguments and address counter-arguments.
+    - **If Content Angle is "Universal"**:
+        - Use a standard, broad educational structure. Focus on clarity and high-level understanding.
     - Example Column Headers: "Site Condition", "Recommended Machine", "Why?".
 
 ### OPERATIONAL REALITIES (DO'S & DON'TS)

@@ -71,7 +71,7 @@ export type BlogPost = {
     primaryKeyword: string;
     secondaryKeywords: string[];
     searchIntent: string;
-    contentAngle: 'How-to' | 'Comparison' | 'Best-for-X' | 'Alternatives' | 'Cost' | 'Mistakes';
+    contentAngle: 'How-to' | 'Comparison' | 'Best-for-X' | 'Alternatives' | 'Cost' | 'Mistakes' | 'Universal' | 'News-Update' | 'Opinion';
     targetInternalLinks: string[];
     cluster: string;
     priorityScore: number;

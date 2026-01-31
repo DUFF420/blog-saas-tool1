@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useRouter } from 'next/navigation';
 import { Label } from '@/components/ui/label';
 import { savePost } from '@/actions/planner';
 import { useProject } from '@/context/project-context';
@@ -33,6 +34,7 @@ export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void
     const [generateImage, setGenerateImage] = useState(false); // Default false as requested
 
     const { activeProject } = useProject();
+    const router = useRouter();
 
     // Auto-detect intent/angle
     const handleAutoDetect = async () => {
@@ -78,7 +80,10 @@ export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void
             };
 
             await savePost(newPost);
-            onPostCreated?.();
+            router.refresh(); // Refresh server components
+            if (onPostCreated) {
+                await onPostCreated();
+            }
             setOpen(false);
             // Reset form
             setTopic('');
@@ -176,6 +181,9 @@ export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void
                                     <option value="Alternatives">Alternatives</option>
                                     <option value="Cost">Cost / Pricing</option>
                                     <option value="Mistakes">Mistakes / Checklist</option>
+                                    <option value="Universal">Universal / General</option>
+                                    <option value="News-Update">News / Update</option>
+                                    <option value="Opinion">Opinion / Thought Leadership</option>
                                 </select>
                             </div>
                         </div>
