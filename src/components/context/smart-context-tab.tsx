@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Button } from '@/components/ui/button';
 import { Loader2, Wand2, CheckCircle, AlertCircle } from 'lucide-react';
 import { generateSmartContextAction } from '@/actions/context';
+import { saveContext } from '@/actions/project';
 
 interface SmartContextTabProps {
     context: ProjectContext;
@@ -23,8 +24,13 @@ export function SmartContextTab({ context, project, onUpdateContext }: SmartCont
             const response = await generateSmartContextAction(project.id, project.domain, context);
 
             if (response.success && response.data) {
+                // 1. Update DB (Auto-Save)
+                await saveContext(project.id, response.data);
+
+                // 2. Update Local State
                 onUpdateContext(response.data);
-                setResult({ success: true, message: "Context Vault successfully updated with Smart Audit data!" });
+
+                setResult({ success: true, message: "Context successfully generated and saved to database!" });
             } else {
                 setResult({ success: false, message: response.error || "Failed to generate context." });
             }

@@ -20,7 +20,7 @@ import { BlogPost } from '@/types';
 import { Plus, Loader2, Wand2 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 
-export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void }) {
+export function CreatePostDialog({ onPostCreated }: { onPostCreated?: (ids?: string[], posts?: BlogPost[]) => void }) {
     const [open, setOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isDetecting, setIsDetecting] = useState(false);
@@ -36,6 +36,9 @@ export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void
     const { activeProject } = useProject();
     const router = useRouter();
 
+    const [highlight, setHighlight] = useState(false);
+
+
     // Auto-detect intent/angle
     const handleAutoDetect = async () => {
         if (!topic || !activeProject) return;
@@ -46,15 +49,39 @@ export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void
             const result = await detectPostMetadataAction(activeProject.id, topic);
 
             if (result.success && result.data) {
-                if (result.data.searchIntent) setIntent(result.data.searchIntent);
-                if (result.data.contentAngle) setAngle(result.data.contentAngle as any);
+                // Check if we got real AI results or just fallback
+                const hasRealData = result.data.searchIntent || result.data.contentAngle;
+
+                if (hasRealData) {
+                    if (result.data.searchIntent) setIntent(result.data.searchIntent);
+                    if (result.data.contentAngle) setAngle(result.data.contentAngle as any);
+
+                    // Primary keyword suggestion if returned
+                    if (result.data.primaryKeyword && !keyword) {
+                        setKeyword(result.data.primaryKeyword);
+                    }
+
+                    // Trigger Visual Feedback
+                    setHighlight(true);
+                    setTimeout(() => setHighlight(false), 2000);
+                } else {
+                    // No API key - show message
+                    alert('AI auto-detect requires OpenAI API key. Please add OPENAI_API_KEY to your .env.local file.');
+                }
+            } else {
+                throw new Error(result.error || 'Detection failed');
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error("Failed to auto-detect", error);
+            alert('AI detection failed. Please check your API configuration.');
         } finally {
             setIsDetecting(false);
         }
     };
+
+    const highlightClass = highlight
+        ? "transition-all duration-500 ring-2 ring-indigo-400 bg-indigo-50 border-indigo-500 shadow-sm"
+        : "transition-all duration-500";
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -81,9 +108,7 @@ export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void
 
             await savePost(newPost);
             router.refresh(); // Refresh server components
-            if (onPostCreated) {
-                await onPostCreated();
-            }
+            onPostCreated?.([newPost.id], [newPost]);
             setOpen(false);
             // Reset form
             setTopic('');
@@ -165,13 +190,14 @@ export function CreatePostDialog({ onPostCreated }: { onPostCreated?: () => void
                                     value={intent}
                                     onChange={(e) => setIntent(e.target.value)}
                                     placeholder="e.g. Informational"
+                                    className={highlightClass}
                                 />
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="angle">Content Angle</Label>
                                 <select
                                     id="angle"
-                                    className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2"
+                                    className={`flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 ${highlightClass}`}
                                     value={angle}
                                     onChange={(e) => setAngle(e.target.value as any)}
                                 >

@@ -51,6 +51,15 @@ export const PostSchema = z.object({
         .optional(),
 });
 
+export const FeatureRequestSchema = z.object({
+    request: z.string()
+        .min(1, "Request cannot be empty")
+        .max(5000, "Request too long")
+        .trim(),
+    source: z.enum(['header', 'wordpress', 'backlinks', 'general'])
+        .default('general')
+});
+
 export const ContextItemSchema = z.object({
     type: z.enum([
         'business_info',

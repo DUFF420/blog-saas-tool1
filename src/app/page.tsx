@@ -1,21 +1,26 @@
 'use client';
 import { useProject } from '@/context/project-context';
 import { useEffect, useState } from 'react';
-import { getDashboardStats } from '@/actions/dashboard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Users, FileText, Layers, TrendingUp, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
+import { ContextHealthWidget } from '@/components/dashboard/context-health-widget';
+import { QuickActionsWidget } from '@/components/dashboard/quick-actions-widget';
+import { BlogPipelineWidget } from '@/components/dashboard/blog-pipeline-widget';
+import { RecentActivityWidget } from '@/components/dashboard/recent-activity-widget';
+import { AIUsageWidget } from '@/components/dashboard/ai-usage-widget';
+import { APIUsageBreakdown } from '@/components/admin/api-usage-breakdown';
 
 export default function Home() {
     const { activeProject } = useProject();
     const [stats, setStats] = useState<any>(null);
     const [loading, setLoading] = useState(true);
-    const [context, setContext] = useState<any>(null);
 
     useEffect(() => {
         async function load() {
             try {
-                const data = await getDashboardStats();
+                const res = await fetch('/api/dashboard/stats');
+                const data = await res.json();
                 setStats(data);
             } catch (e) {
                 console.error(e);
@@ -25,18 +30,6 @@ export default function Home() {
         }
         load();
     }, []);
-
-    useEffect(() => {
-        async function loadContext() {
-            if (activeProject) {
-                try {
-                    const ctx = await import('@/actions/project').then(m => m.getContext(activeProject.id));
-                    setContext(ctx);
-                } catch (e) { console.error(e); }
-            }
-        }
-        loadContext();
-    }, [activeProject]);
 
     if (loading) return <div className="p-8">Loading Dashboard...</div>;
 
@@ -73,17 +66,10 @@ export default function Home() {
                             <p className="text-xs text-muted-foreground">Active Workspaces</p>
                         </CardContent>
                     </Card>
-                    {/* Placeholder for Requests */}
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Total Requests</CardTitle>
-                            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">1,204</div>
-                            <p className="text-xs text-muted-foreground">API Calls (Est.)</p>
-                        </CardContent>
-                    </Card>
+                    {/* API Usage Breakdown */}
+                    <div className="md:col-span-1">
+                        <APIUsageBreakdown />
+                    </div>
                 </div>
             </div>
         );
@@ -104,73 +90,33 @@ export default function Home() {
         );
     }
 
-    // Calculate Context Score (Gamification)
-    let filledFields = 0;
-    let totalFields = 0;
-
-    // Simple check on top-level objects
-    if (context) {
-        if (context.business) { totalFields += 5; if (context.business.targetAudience) filledFields++; }
-        if (context.brand) { totalFields += 3; if (context.brand.tone) filledFields++; }
-        if (context.domainInfo) { totalFields += 2; if (context.domainInfo.sitemapUrl) filledFields++; }
-    }
-    const score = totalFields > 0 ? Math.round((filledFields / totalFields) * 100) : 0;
-
-
     return (
-        <div className="space-y-8">
+        <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight text-slate-900">Dashboard</h1>
+                    <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900">Dashboard</h1>
                     <p className="text-slate-500">Overview for {activeProject.name}</p>
                 </div>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {/* CONTEXT SCORE CARD */}
-                <Card className="col-span-2 bg-gradient-to-br from-indigo-600 to-indigo-800 text-white border-none shadow-lg">
-                    <CardHeader>
-                        <CardTitle className="text-indigo-100">Context Health Score</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="flex items-end gap-4 mb-4">
-                            <span className="text-5xl font-bold">{score}%</span>
-                            <span className="text-indigo-200 mb-1">Optimized</span>
-                        </div>
-                        <div className="w-full bg-indigo-900/50 rounded-full h-3 mb-2">
-                            <div
-                                className="bg-white rounded-full h-3 transition-all duration-1000"
-                                style={{ width: `${score}%` }}
-                            ></div>
-                        </div>
-                        <p className="text-xs text-indigo-200">
-                            {score < 100
-                                ? "Complete your Context Vault to unlock higher quality AI output."
-                                : "Excellent! Your context is fully populated for maximum AI accuracy."}
-                        </p>
-                        {score < 100 && (
-                            <Link href="/context" className="mt-4 inline-block bg-white/20 hover:bg-white/30 text-white text-xs font-semibold py-2 px-4 rounded transition-colors">
-                                Complete Setup &rarr;
-                            </Link>
-                        )}
-                    </CardContent>
-                </Card>
+            {/* Widget Grid */}
+            <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                {/* Context Health - Full Width on Small, Spans 2 cols on Large */}
+                <div className="lg:col-span-2">
+                    <ContextHealthWidget projectId={activeProject.id} />
+                </div>
 
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Quick Stats</CardTitle>
-                        <FileText className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-4 mt-2">
-                            <div className="flex justify-between items-center">
-                                <span className="text-sm text-slate-500">Domain</span>
-                                <span className="text-sm font-medium truncate max-w-[150px]">{activeProject.domain}</span>
-                            </div>
-                            {/* Add more project specific stats here if available in context */}
-                        </div>
-                    </CardContent>
-                </Card>
+                {/* Quick Actions */}
+                <QuickActionsWidget />
+
+                {/* Blog Pipeline */}
+                <BlogPipelineWidget projectId={activeProject.id} />
+
+                {/* Recent Activity */}
+                <RecentActivityWidget projectId={activeProject.id} />
+
+                {/* AI Usage Stats - REMOVED for customer view */}
+                {/* <AIUsageWidget projectId={activeProject.id} /> */}
             </div>
         </div>
     );

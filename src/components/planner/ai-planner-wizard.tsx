@@ -1,19 +1,20 @@
 'use client';
 
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { useProject } from '@/context/project-context';
-import { savePost } from '@/actions/planner';
+import { importPosts } from '@/actions/planner';
 import { BlogPost } from '@/types';
 import { Loader2, Sparkles, Check, X } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { generateBlogIdeasAction } from '@/actions/planner';
 
-export function AIPlannerWizard({ onPostsCreated }: { onPostsCreated?: () => void }) {
+export function AIPlannerWizard({ onPostsCreated }: { onPostsCreated?: (ids: string[], posts?: BlogPost[]) => void }) {
     const [open, setOpen] = useState(false);
     const [step, setStep] = useState<'config' | 'generating' | 'review'>('config');
     const { activeProject } = useProject();
@@ -48,10 +49,12 @@ export function AIPlannerWizard({ onPostsCreated }: { onPostsCreated?: () => voi
             } else {
                 // Handle error
                 console.error(result.error);
+                toast.error(result.error || "Failed to generate ideas. Please check API Key.");
                 setStep('config');
             }
-        } catch (e) {
+        } catch (e: any) {
             console.error(e);
+            toast.error(e.message || "An unexpected error occurred.");
             setStep('config');
         }
     };
@@ -69,13 +72,15 @@ export function AIPlannerWizard({ onPostsCreated }: { onPostsCreated?: () => voi
     const handleSave = async () => {
         if (!activeProject) return;
         setIsSaving(true);
-        let savedCount = 0;
+        const newPosts: BlogPost[] = [];
+        const newIds: string[] = [];
 
         try {
             for (const index of Array.from(selectedIndices)) {
                 const idea = ideas[index];
+                const newId = crypto.randomUUID();
                 const newPost: BlogPost = {
-                    id: crypto.randomUUID(),
+                    id: newId,
                     projectId: activeProject.id,
                     topic: idea.topic,
                     seoTitle: '',
@@ -90,16 +95,26 @@ export function AIPlannerWizard({ onPostsCreated }: { onPostsCreated?: () => voi
                     notes: idea.rationale || '',
                     generateImage: false // Default off
                 };
-                await savePost(newPost);
-                savedCount++;
+                newPosts.push(newPost);
+                newIds.push(newId);
             }
-            onPostsCreated?.();
+
+            // Optimistic Update First (Instant UI)
+            onPostsCreated?.(newIds, newPosts);
+
+            // Close Dialog Immediately
             setOpen(false);
             setStep('config');
             setGoal('');
             setIdeas([]);
+
+            // Background Save
+            await importPosts(newPosts);
+
+            toast.success(`Saved ${newPosts.length} ideas.`);
         } catch (e) {
             console.error("Failed to save posts", e);
+            toast.error("Failed to save ideas.");
         } finally {
             setIsSaving(false);
         }
@@ -159,29 +174,45 @@ export function AIPlannerWizard({ onPostsCreated }: { onPostsCreated?: () => voi
                 {step === 'review' && (
                     <div className="space-y-4 py-4">
                         <p className="text-sm text-slate-500">Select the ideas you want to add to your planner ({selectedIndices.size} selected).</p>
-                        <div className="grid gap-3">
-                            {ideas.map((idea, idx) => (
-                                <Card
-                                    key={idx}
-                                    className={`cursor-pointer transition-colors border-2 ${selectedIndices.has(idx) ? 'border-indigo-500 bg-indigo-50/50' : 'border-transparent hover:border-slate-200'}`}
-                                    onClick={() => toggleSelection(idx)}
-                                >
-                                    <CardContent className="p-4 flex items-start gap-3">
-                                        <div className={`mt-1 h-5 w-5 rounded border flex items-center justify-center ${selectedIndices.has(idx) ? 'bg-indigo-600 border-indigo-600 text-white' : 'border-slate-300'}`}>
-                                            {selectedIndices.has(idx) && <Check className="h-3 w-3" />}
-                                        </div>
-                                        <div className="space-y-1">
-                                            <h4 className="font-semibold text-sm leading-none">{idea.topic}</h4>
-                                            <p className="text-xs text-slate-500">
-                                                <span className="font-medium text-slate-700">Keyword:</span> {idea.primaryKeyword} <span className="mx-1">•</span>
-                                                <span className="font-medium text-slate-700">Intent:</span> {idea.searchIntent}
-                                            </p>
-                                            <p className="text-xs text-slate-600 italic">"{idea.rationale}"</p>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            ))}
-                        </div>
+
+                        {ideas.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center py-8 text-center space-y-3 border-2 border-dashed border-slate-200 rounded-lg">
+                                <div className="p-3 bg-amber-50 rounded-full">
+                                    <Sparkles className="h-6 w-6 text-amber-500" />
+                                </div>
+                                <div>
+                                    <h4 className="font-medium text-slate-900">No ideas found</h4>
+                                    <p className="text-sm text-slate-500 max-w-xs mx-auto">The AI didn't return any valid ideas. This might be due to a strict filter or an API issue.</p>
+                                </div>
+                                <Button variant="outline" size="sm" onClick={() => setStep('config')}>
+                                    Try Again
+                                </Button>
+                            </div>
+                        ) : (
+                            <div className="grid gap-3">
+                                {ideas.map((idea, idx) => (
+                                    <Card
+                                        key={idx}
+                                        className={`cursor-pointer transition-colors border-2 ${selectedIndices.has(idx) ? 'border-indigo-500 bg-indigo-50/50' : 'border-transparent hover:border-slate-200'}`}
+                                        onClick={() => toggleSelection(idx)}
+                                    >
+                                        <CardContent className="p-4 flex items-start gap-3">
+                                            <div className={`mt-1 h-5 w-5 rounded border flex items-center justify-center ${selectedIndices.has(idx) ? 'bg-indigo-600 border-indigo-600 text-white' : 'border-slate-300'}`}>
+                                                {selectedIndices.has(idx) && <Check className="h-3 w-3" />}
+                                            </div>
+                                            <div className="space-y-1">
+                                                <h4 className="font-semibold text-sm leading-none">{idea.topic}</h4>
+                                                <p className="text-xs text-slate-500">
+                                                    <span className="font-medium text-slate-700">Keyword:</span> {idea.primaryKeyword} <span className="mx-1">•</span>
+                                                    <span className="font-medium text-slate-700">Intent:</span> {idea.searchIntent}
+                                                </p>
+                                                <p className="text-xs text-slate-600 italic">"{idea.rationale}"</p>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 )}
 

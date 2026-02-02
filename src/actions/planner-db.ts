@@ -50,7 +50,8 @@ export async function getPostsDB(projectId: string): Promise<BlogPost[]> {
         generateImage: p.generate_image || false,
         scheduledDate: p.scheduled_date,
         createdAt: p.created_at,
-        updatedAt: p.updated_at
+        updatedAt: p.updated_at,
+        viewed_at: p.viewed_at
     }));
 }
 
@@ -92,8 +93,29 @@ export async function getPostByIdDB(postId: string): Promise<BlogPost | null> {
         generateImage: p.generate_image || false,
         scheduledDate: p.scheduled_date,
         createdAt: p.created_at,
-        updatedAt: p.updated_at
+        updatedAt: p.updated_at,
+        viewed_at: p.viewed_at
     };
+}
+
+export async function getGeneratingPostsDB(projectId: string): Promise<string[]> {
+    // SECURITY CHECK
+    const hasAccess = await verifyProjectAccessDB(projectId);
+    if (!hasAccess) return [];
+
+    const supabase = await createClerkSupabaseClient();
+    const { data, error } = await supabase
+        .from('posts')
+        .select('id')
+        .eq('project_id', projectId)
+        .eq('status', 'generating');
+
+    if (error) {
+        console.error('Error fetching generating posts:', error);
+        return [];
+    }
+
+    return data.map(p => p.id);
 }
 
 export async function savePostDB(post: BlogPost) {

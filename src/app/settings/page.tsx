@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import { AboutDeveloper } from '@/components/settings/about-developer';
 import { ExportDialog } from '@/components/settings/export-dialog';
 import { DeleteProjectDialog } from '@/components/settings/delete-project-dialog';
+import Image from 'next/image';
 
 export default function SettingsPage() {
     const { activeProject, reloadContext } = useProject();
@@ -46,9 +47,14 @@ export default function SettingsPage() {
 
     return (
         <div className="space-y-6">
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold tracking-tight">Project Settings</h1>
-                <p className="text-slate-500">Manage configuration for {activeProject.name}</p>
+            <div className="mb-8 flex items-center gap-4">
+                <div className="relative w-16 h-16 rounded-xl overflow-hidden border border-slate-200 shadow-sm bg-white p-2">
+                    <Image src="/logo.png" alt="Project Logo" fill className="object-contain" />
+                </div>
+                <div>
+                    <h1 className="text-3xl font-bold tracking-tight">Project Settings</h1>
+                    <p className="text-slate-500">Manage configuration for {activeProject.name}</p>
+                </div>
             </div>
 
             <Card>

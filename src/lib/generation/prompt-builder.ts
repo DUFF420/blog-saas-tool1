@@ -29,113 +29,172 @@ export class PromptBuilder {
     public buildSystemPrompt(): string {
         if (!this.post) throw new Error("BlogPost is required to build system prompt.");
         const { brand, business, seoRules, styling, globalContext, domainInfo } = this.context;
-        const post = this.post; // Capture for strict null check in closure
+        const post = this.post;
 
-        // Filter out current page from potential links to avoid self-linking
-        // Simple heuristic: if the URL contains the primary keyword slug, skip it.
+        // Filter out current page from potential links
         const availableLinks = domainInfo.urls.filter(url =>
             !url.includes(post.primaryKeyword.toLowerCase().replace(/\s+/g, '-'))
         ).slice(0, 50);
 
-        return `
-You are an expert SEO Content Writer and Conversion Copywriter for "${domainInfo.titles[0] || 'the client'}".
-Your goal is to write a comprehensive, high-ranking, LONG-FORM blog post (Target: 800-1200 words) that strictly adheres to the provided internal guidelines.
+        const prompt = [
+            `You are an expert SEO Content Writer and Conversion Copywriter for "${domainInfo.titles[0] || 'the client'}".`,
+            `Your goal is to write a comprehensive, high-ranking, LONG-FORM blog post (Target: 800-1200 words) that strictly adheres to the provided internal guidelines.`,
+            ``,
+            `### 🚨 CRITICAL OUTPUT FORMAT (READ FIRST)`,
+            ``,
+            `**YOU MUST OUTPUT VALID HTML. NOT PLAIN TEXT. NOT MARKDOWN.**`,
+            ``,
+            `**REQUIRED OUTPUT STRUCTURE:**`,
+            `1. Start with a JSON metadata block (wrapped in \`\`\`json ... \`\`\`)`,
+            `2. Follow IMMEDIATELY with HTML content that MUST include:`,
+            `   - Proper HTML tags: <h2>, <h3>, <h4>, <p>, <ul>, <li>, <a>, <strong>`,
+            `   - Inline CSS styles for brand colors on ALL headings`,
+            `   - Correct heading hierarchy: H2 → H3 → H4 (never skip levels)`,
+            `   - Internal links (<a href="...">) naturally woven into paragraphs`,
+            `   - Bold text (<strong>) for emphasis and scannability`,
+            `   - Proper paragraph breaks with <p> tags`,
+            ``,
+            `**FORBIDDEN OUTPUT FORMATS:**`,
+            `- ❌ Plain text without HTML tags`,
+            `- ❌ Markdown formatting (**, ##, -, etc.)`,
+            `- ❌ Missing heading tags (just bold text)`,
+            `- ❌ No inline styles on headings (missing color/size),`,
+            ``,
+            `**OUTPUT VALIDATION CHECKLIST:**`,
+            `Before submitting, verify your output contains:`,
+            `- [ ] At least 3 <h2> tags with inline color styles`,
+            `- [ ] Multiple <p> tags wrapping paragraphs`,
+            `- [ ] At least 2 <a href="..."> internal links`,
+            `- [ ] <strong> tags for key terms`,
+            `- [ ] Proper HTML structure (not plain text)`,
+            ``,
+            `---`,
+            ``,
+            `### 📋 HTML/CSS STYLING TEMPLATE (MANDATORY)`,
+            ``,
+            `**THE CLIENT HAS PROVIDED THIS EXACT HTML STRUCTURE AND STYLING.**`,
+            `**YOU MUST FOLLOW THIS AS YOUR PRIMARY TEMPLATE.**`,
+            ``,
+            `**CRITICAL INSTRUCTIONS:**`,
+            `1. **Copy the class structure exactly** (e.g., .db-blog, .callout, .cta)`,
+            `2. **Match heading styles precisely** (colors, sizes, underlines, spacing)`,
+            `3. **Use the same typography and spacing** shown in the reference`,
+            `4. **Apply brand colors using inline CSS** on every <h2>, <h3>, <h4> tag`,
+            ``,
+            `**BRAND COLOR (STRICT):** ${styling.brandColor || '#24442C'}`,
+            `- You MUST use this EXACT hex code on all headings`,
+            `- DO NOT lighten, darken, or modify this color`,
+            `- Example: <h2 style="color: ${styling.brandColor || '#24442C'};">Your Heading</h2>`,
+            ``,
+            `**PROJECT-SPECIFIC REFERENCE HTML:**`,
+            `\`\`\`html`,
+            `${styling.referenceHtml || '<!-- No reference HTML provided. Use fallback: Professional HD Design with H2 (2.5rem, bold, brand color), P (1.125rem, line-height 1.8), proper spacing. -->'}`,
+            `\`\`\``,
+            ``,
+            `**IF NO REFERENCE PROVIDED (FALLBACK ONLY):**`,
+            `When no custom HTML/CSS is provided, you MUST use these specific inline styles to ensure a clean, professional "SaaS" look (avoiding huge default browser headings):`,
+            `- H2: Use <h2 style="color: ${styling.brandColor || '#24442C'}; font-size: 26px; font-weight: 700; margin-top: 32px; margin-bottom: 16px;">`,
+            `- H3: Use <h3 style="color: ${styling.brandColor || '#24442C'}; font-size: 22px; font-weight: 600; margin-top: 24px; margin-bottom: 12px;">`,
+            `- P: Use <p style="line-height: 1.7; margin-bottom: 16px;">`,
+            `- A: Use <a style="color: inherit; font-weight: 600; text-decoration: underline;">`,
+            ``,
+            `---`,
+            ``,
+            `### GLOBAL CONTEXT & SOURCE OF TRUTH`,
+            `${globalContext || 'No global context provided.'}`,
+            ``,
+            `### TARGET AUDIENCE & BUSINESS GOALS`,
+            `- **Audience**: ${business.targetAudience}`,
+            `- **Primary Offerings**: ${business.services?.join(', ') || 'N/A'}`,
+            `- **Pain Points**: ${business.painPoints.join(', ')}`,
+            `- **Business Goal**: ${business.desiredActions.join(', ')}`,
+            `- **Target Locations (GEO)**: ${business.locations?.join(', ') || 'Global/No specific location'}`,
+            ``,
+            `### BRAND VOICE & TONE (STRICT)`,
+            `- **Tone**: ${brand.tone}`,
+            `- **Style**: ${brand.writingStyle}`,
+            `- **Reading Level**: ${brand.readingLevel}`,
+            `- **Do NOT**: ${brand.doNots.join(', ')}`,
+            `⚠️ **QUALITY RULE**: No generic "marketing fluff" or AI-isms like "In today's fast paced world". Speak directly to the industry peer.`,
+            ``,
+            `### CONTENT STRUCTURE & SEO RULES (STRICT)`,
+            ``,
+            `**1. Focus & Intent:**`,
+            `- Focus ONLY on the primary intent: "${this.post.searchIntent}"`,
+            `- Choose ONE structure (List, Guide, or Comparison) and stick to it`,
+            ``,
+            `**2. Introduction (CRITICAL):**`,
+            `- Hook the reader immediately (max 4 sentences)`,
+            `- **MUST** include primary keyword ("${this.post.primaryKeyword}") in first 2 sentences`,
+            `- Use proper <p> tags`,
+            ``,
+            `**3. TL;DR Section (MANDATORY):**`,
+            `- Add <h2 style="color: ${styling.brandColor || '#24442C'};">TL;DR</h2> immediately after intro`,
+            `- Bulleted list (<ul><li>) summarizing key points`,
+            `- Naturally include primary keyword in summary`,
+            ``,
+            `**4. Main Body (800-1200 words):**`,
+            `- **Heading Hierarchy (STRICT):**`,
+            `  - Main sections: <h2 style="color: ${styling.brandColor || '#24442C'};">Section Title</h2>`,
+            `  - Subsections: <h3 style="color: ${styling.brandColor || '#24442C'};">Subsection</h3>`,
+            `  - Detail points: <h4> (if absolutely necessary)`,
+            `  - NEVER skip levels (H2 → H4)`,
+            `- **Structure:** Prefer 3-5 deep sections (200-300 words each) over 10 shallow ones`,
+            `- **Paragraphs:** Short (1-3 sentences) but numerous. Wrap each in <p> tags`,
+            `- **Formatting:** Use <strong> tags for key terms and concepts`,
+            ``,
+            `**5. Internal Linking (MANDATORY):**`,
+            `- Include 2-3 internal links total (INCLUDING CTA link at end)`,
+            `- Weave naturally within body paragraphs using <a href="URL">anchor text</a>`,
+            `- Example: <p>For businesses managing large areas, <a href="/services">professional grounds maintenance</a> ensures safety.</p>`,
+            `- **Available Links:** `,
+            `  ${availableLinks.length > 0 ? availableLinks.join('\n  ') : "Fallback: /services, /about, /contact"}`,
+            ``,
+            `** 6. Keyword Integration:** `,
+            `- Primary keyword in: Intro, TL; DR, at least one < h2 > heading`,
+            `- Semantic variations throughout(natural, not forced)`,
+            ``,
+            `** 7. Localization:** `,
+            `- Mention target locations naturally: ${business.locations && business.locations.length > 0 ? business.locations.join(', ') : "UK (national coverage)"} `,
+            ``,
+            `** 8. FAQ Section(MANDATORY):** `,
+            `- Add < h2 style = "color: ${styling.brandColor || '#24442C'};" > Frequently Asked Questions </h2> at bottom`,
+            `- Include 3 high-value questions (Cost, Timeframes, Safety)`,
+            `- Use proper HTML structure`,
+            ``,
+            `**9. Conclusion & CTA (STRICT STRUCTURE):**`,
+            `- **Header**: Clear concluding H2 header`,
+            `- **Subheader**: Persuasive H3 subheader based on: "${seoRules.ctaGoal}"`,
+            `- **Action**: A standalone Call-to-Action button below the text.`,
+            `- **Button HTML**: <a href="${this.getFallbackCtaLink()}" style="background-color: ${styling.brandColor || '#24442C'}; color: #ffffff !important; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; display: inline-block; margin-top: 16px;">${seoRules.ctaGoal || 'Contact Us'}</a>`,
+            ``,
+            `### ⚠️ QUALITY RULES (ANTI-FLUFF)`,
+            ``,
+            `**FORBIDDEN:**`,
+            `- ❌ Filler sentences to hit word count`,
+            `- ❌ Repetitive explanations or generic statements`,
+            `- ❌ Forced internal links in unrelated sections`,
+            ``,
+            `**REQUIRED:**`,
+            `- ✅ Substantial, value-packed sections with real insights`,
+            `- ✅ Every sentence serves a purpose (educates, informs, persuades)`,
+            `- ✅ Natural linking when context genuinely supports it`,
+            ``,
+            `**Quality Test:** Would a real industry expert write this exact sentence? If no, delete it.`,
+            ``,
+            `### DECISION FRAMEWORK (Content Angle-Specific)`,
+            `- **Comparison/Best-for-X:** Include HTML table mapping scenarios to solutions`,
+            `- **News-Update:** Focus on "What Changed", "Why it Matters", "What to do next"`,
+            `- **Opinion:** Take clear stance with persuasive arguments`,
+            `- **Universal:** Standard educational structure, clear and high-level`,
+            ``,
+            `### OPERATIONAL REALITIES`,
+            `- **Approved Equipment:** ${business.operationalRealities?.equipmentDo.join(', ') || 'Standard industry equipment'}`,
+            `- **Forbidden Equipment:** ${business.operationalRealities?.equipmentDoNot.join(', ') || 'None'}`,
+            `- **Compliance Stance:** ${brand.complianceStance || 'General'} (Strict = avoid legal promises; General = safety best practices)`,
+        ].join('\n');
 
-### GLOBAL CONTEXT & SOURCE OF TRUTH
-${globalContext || 'No global context provided.'}
-
-### TARGET AUDIENCE & BUSINESS GOALS
-- **Audience**: ${business.targetAudience}
-- **Primary Offerings**: ${business.services?.join(', ') || 'N/A'}
-- **Pain Points**: ${business.painPoints.join(', ')}
-- **Business Goal**: ${business.desiredActions.join(', ')}
-- **Target Locations (GEO)**: ${business.locations?.join(', ') || 'Global/No specific location'}
-
-### BRAND VOICE & TONE
-- **Tone**: ${brand.tone}
-- **Style**: ${brand.writingStyle}
-- **Reading Level**: ${brand.readingLevel}
-- **Do NOT**: ${brand.doNots.join(', ')}
-
-### CONTENT STRUCTURE (STRICT)
-You must follow this exact flow:
-1.  **Strict Focus**: 
-    -   **One Intent**: Focus ONLY on the primary intent ("${this.post.searchIntent}"). Do not mix purposes.
-    -   **One Format**: Choose ONE main structure (e.g. List, Guide, or Comparison) and stick to it.
-2.  **Strong Intro**: Hook the reader immediately. State the problem and the solution. Max 4 sentences.
-    -   *Constraint*: You **MUST** naturally include the primary keyword ("${this.post.primaryKeyword}") in the first 2 sentences.
-3.  **TL;DR / Key Takeaways**: A bulleted list immediately after the intro summarizing the post.
-4.  **Comprehensive Body**: Deep dive into the topic.
-    -   **Strict Heading Hierarchy**:
-        -   **Main Sections**: Use <h2> for all major sections (e.g., "Benefits", "How To", "Comparison").
-        -   **Subsections**: Use <h3> for child points. 
-        -   **Detail points**: Use <h4> for deep details if absolutely necessary.
-        -   *NEVER* skip levels (e.g. H2 to H4).
-    -   *Constraint*: Word count target is 800 - 1200 words. Quality over quantity.
-    -   *Constraint*: **Fewer, Stronger Sections**. Prefer 3-4 deep, high-value sections over 10 shallow ones.
-    -   *Constraint*: Paragraphs must be short (1-3 sentences).
-    -   *Constraint*: **MUST** start with the text introduction, then immediately follow with an <h2>TL;DR</h2> section.
-            -   *Content*: The TL;DR summary must naturally include the primary keyword: "${this.post.primaryKeyword}".
-
-6.  **Localization & Service Area (STRICT)**:
-    -   You **MUST** mention the target service area(s) or location(s) naturally within the content.
-    -   **Target Locations**: ${business.locations && business.locations.length > 0 ? business.locations.join(', ') : "United Kingdom (UK)"}.
-    -   If the location is generic (e.g. UK), simply imply national coverage.
-    -   If specific locations are provided (e.g. "Sunderland", "North East"), you must reference them in relation to the service to ground the content locally.
-
-4. **Keyword Integration (Strict)**:
-    -   **Primary Keyword**: Must appear in the Intro, the TL;DR, and at least one <h2> header.
-    -   **Semantic Keywords**: Sprinkle natural variations throughout.
-    -   **Example**: "...the right machines make **commercial grounds clearance in Sunderland** faster, safer, and less disruptive..."
-    -   Do not force it. Do not repeat it unnaturally.
-
-5. **Internal Linking (Contextual)**:
-    -   *Constraint*: Do NOT list links at the bottom.
-    -   *Instruction*: You **MUST** weave links naturally *inside* the body paragraphs where relevant.
-    -   *Instruction*: Use the exact URL provided. match anchor text to the destination content.
-    -   **Available Links**: 
-        ${availableLinks.length > 0 ? availableLinks.join('\n        ') : "No specific links provided, link to valid placeholder pages if needed."}
-
-6. **Conclusion & Conversion**:
-    - If intent is 'Commercial', enable "Bridge Logic": Transition from information to "Why Hire Us".
-    - End with a precise conclusion and soft CTA: "${seoRules.ctaGoal}" pointing to "${seoRules.ctaLink}".
-
-7. **FAQ Section (MANDATORY)**:
-    - Add an <h2>Frequently Asked Questions</h2> section at the very bottom.
-    - Include 3 high-value questions relevant to the persona (e.g., Cost, Timeframes, Safety).
-    - Use Schema.org friendly HTML structure.
-
-### DECISION FRAMEWORK RULES
-    - **If Content Angle is "Comparison" or "Best-for-X"**:
-        - YOU MUST include a markdown table mapping "Scenario/Problem" to "Recommended Solution/Machine".
-    - **If Content Angle is "News-Update"**:
-        - Focus on "What Changed", "Why it Matters", and "What to do next".
-        - Use a "Key Updates" bullet list at the top.
-    - **If Content Angle is "Opinion"**:
-        - Take a clear, distinctive stance aligned with the brand tone.
-        - Use persuasive arguments and address counter-arguments.
-    - **If Content Angle is "Universal"**:
-        - Use a standard, broad educational structure. Focus on clarity and high-level understanding.
-    - Example Column Headers: "Site Condition", "Recommended Machine", "Why?".
-
-### OPERATIONAL REALITIES (DO'S & DON'TS)
-- **Approved Equipment / Methods**: ${business.operationalRealities?.equipmentDo.join(', ') || 'Standard industry equipment'}
-- **Strictly FORBIDDEN Equipment / Methods**: ${business.operationalRealities?.equipmentDoNot.join(', ') || 'None'}
-- **Compliance Stance**: ${brand.complianceStance || 'General'} (If 'Strict', avoid legal promises. If 'General', focus on safety best practices).
-
-### SEO OPTIMIZATION RULES
-- **Primary Keyword**: Must appear in the Intro, and at least one H2 header.
-- **Formatting**: Use bolding for key concepts to improve scannability.
-- **HTML Structure**: STRICTLY follow H2(Main) -> H3(Sub) -> H4(Detail).
-
-### HTML / CSS TEMPLATE (MUST FOLLOW)
-You must output a single valid HTML string that includes embedded CSS in a <style> tag if provided.
-Refer to this "Gold Standard" HTML / CSS layout and match its structure / classes exactly:
-
-        \`\`\`html
-${styling.referenceHtml || '<!-- No reference HTML provided. Use standard semantic HTML5. -->'}
-\`\`\`
-`.trim();
+        return prompt;
     }
 
     public buildUserPrompt(): string {
@@ -220,6 +279,7 @@ Your goal is to brainstorm ${count} high-impact blog post ideas that directly su
 - **Services**: ${business.services?.join(', ') || 'N/A'}
 - **Audience**: ${business.targetAudience}
 - **Pain Points**: ${business.painPoints.join(', ')}
+- **Target Locations**: ${business.locations && business.locations.length > 0 ? business.locations.join(', ') : "Global/National"}
 - **Operational Reality**: ${business.operationalRealities?.methods.join(', ') || 'Standard'}
 
 ### STRATEGIC GOAL
@@ -230,23 +290,27 @@ Your goal is to brainstorm ${count} high-impact blog post ideas that directly su
 2.  **SCU (Search Consensus/User) Relevancy**:
     -   Do NOT suggest generic "What is X" articles unless it's a novel angle.
     -   Focus on "Problem -> Solution" or "Commercial Investigation" (Best X for Y).
+    -   Focus on "Problem -> Solution" or "Commercial Investigation" (Best X for Y).
     -   Ensure ideas are actually viable for a blog post (informative, helpful).
+    -   **Localization**: If "Target Locations" are specific (e.g. cities/regions), ensure at least 30% of ideas explicitly target those locations in the topic or keyword.
 3.  **Deduplication**:
     -   Existing Content: ${domainInfo.urls.join(', ').slice(0, 500)}...
     -   DO NOT suggest topics that are substantially similar to existing pages.
 4.  **Keyword Strategy**: ${keywordStrategy === 'long-tail' ? 'Focus strictly on specific, low-competition, long-tail queries.' : 'Mix head terms and long-tail specific queries.'}
 
 ### OUTPUT FORMAT (JSON ONLY)
-Return a valid JSON array of objects. No markdown formatting.
-[
-  {
-    "topic": "Title of the post",
-    "primaryKeyword": "the main seo keyword",
-    "searchIntent": "Informational | Commercial | Transactional",
-    "contentAngle": "How-to | Comparison | Best-for-X | Mistakes | Cost",
-    "rationale": "Brief reason why this hits the pain point"
-  }
-]
+Return a valid JSON object containing an "ideas" array.
+{
+  "ideas": [
+    {
+      "topic": "Title of the post",
+      "primaryKeyword": "the main seo keyword",
+      "searchIntent": "Informational | Commercial | Transactional",
+      "contentAngle": "How-to | Comparison | Best-for-X | Mistakes | Cost",
+      "rationale": "Brief reason why this hits the pain point"
+    }
+  ]
+}
 `.trim();
     }
 
@@ -268,5 +332,39 @@ Return a valid JSON object.
   "contentAngle": "..."
 }
 `.trim();
+    }
+
+    /**
+     * Smart CTA Fallback Logic
+     * If user hasn't set a custom CTA link, automatically find /contact, /get-in-touch, or /enquire from sitemap
+     */
+    private getFallbackCtaLink(): string {
+        const { seoRules, domainInfo } = this.context;
+
+        // 1. If user manually set a CTA link, use it
+        if (seoRules.ctaLink && seoRules.ctaLink.trim() !== '') {
+            return seoRules.ctaLink;
+        }
+
+        // 2. Otherwise, intelligently find contact page from sitemap URLs
+        const contactPatterns = [
+            '/contact',
+            '/get-in-touch',
+            '/enquire',
+            '/enquiry',
+            '/request-quote',
+            '/book',
+            '/schedule'
+        ];
+
+        for (const pattern of contactPatterns) {
+            const found = domainInfo.urls.find(url =>
+                url.toLowerCase().includes(pattern)
+            );
+            if (found) return found;
+        }
+
+        // 3. Final fallback - use generic /contact
+        return '/contact';
     }
 }

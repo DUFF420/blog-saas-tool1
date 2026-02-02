@@ -13,7 +13,10 @@ export type ProjectContext = {
         h1s: string[];
         services: string[];
         sitemapUrl?: string;
-        lastSitemapFetch?: string; // ISO Date string
+        pageSitemapUrl?: string; // Secondary sitemap for pages
+        lastSitemapFetch?: string; // ISO Date string (legacy/general)
+        lastPostSitemapFetch?: string; // ISO Date string - last post sitemap import
+        lastPageSitemapFetch?: string; // ISO Date string - last page sitemap import
     };
     brand: {
         tone: string;
@@ -47,6 +50,9 @@ export type ProjectContext = {
     };
     styling: {
         referenceHtml: string; // Example HTML blog post with integrated CSS/classes
+        brandColor?: string; // Explicit brand color for headings
+        customHtml?: string; // User's raw HTML component
+        customCss?: string; // User's raw CSS rules
     };
     keywords: {
         target: string[];
@@ -59,6 +65,7 @@ export type ProjectContext = {
         internalLinks: { url: string; anchor: string; equity: number }[];
     };
     wordpressNotes?: string; // User notes for the coming soon WP page
+    backlinkNotes?: string; // User notes for the coming soon Backlink Network page
 };
 
 export type BlogPostStatus = 'idea' | 'generating' | 'drafted' | 'approved' | 'saved' | 'trash' | 'published';
@@ -84,4 +91,16 @@ export type BlogPost = {
     imagePath?: string; // Path to generated image
     metaDescription?: string; // Yoast/SEO Meta Description
     generateImage?: boolean; // Toggle for AI image generation
+    viewed_at?: string; // ISO Date when post was first viewed (for unread animation)
+};
+
+export type FeatureRequest = {
+    id: string;
+    user_id: string;
+    email: string;
+    request: string;
+    status: 'pending' | 'reviewed' | 'planned' | 'completed';
+    source: 'header' | 'wordpress' | 'backlinks' | 'general';
+    is_starred: boolean;
+    created_at: string;
 };

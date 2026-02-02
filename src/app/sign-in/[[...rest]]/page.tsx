@@ -1,12 +1,10 @@
 import { SignIn } from "@clerk/nextjs";
-import { cookies } from "next/headers";
+import { ClearSession } from "@/components/auth/clear-session";
 
-export default async function Page() {
-    (await cookies()).delete('site_access_token');
-    (await cookies()).delete('site_access'); // Clear grandfathered cookie if exists
-
+export default function Page() {
     return (
         <div className="flex items-center justify-center min-h-screen bg-white">
+            <ClearSession />
             <SignIn />
         </div>
     );

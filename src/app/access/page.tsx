@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { verifyAccessCode, checkAccessStatus } from '@/actions/access';
 import { toast } from 'sonner';
 import { ShieldCheck, LockKeyhole, ShieldAlert } from 'lucide-react';
+import Image from 'next/image';
 
 export default function AccessPage() {
     const [code, setCode] = useState('');
@@ -119,8 +120,8 @@ export default function AccessPage() {
         <div className="flex flex-col items-center justify-center p-4">
             <div className="w-full max-w-md bg-slate-900 rounded-2xl shadow-xl overflow-hidden border border-slate-800">
                 <div className="p-8 text-center">
-                    <div className="mx-auto bg-blue-600 rounded-2xl w-16 h-16 flex items-center justify-center mb-6 shadow-lg shadow-blue-900/20">
-                        <LockKeyhole className="text-white w-8 h-8" />
+                    <div className="mx-auto bg-slate-950 rounded-full w-24 h-24 flex items-center justify-center mb-6 shadow-lg shadow-blue-900/20 ring-4 ring-slate-800">
+                        <Image src="/logo.png" alt="Logo" width={64} height={64} className="w-16 h-16 object-contain" />
                     </div>
 
                     <h1 className="text-2xl font-bold text-white mb-2">Early Access Required</h1>

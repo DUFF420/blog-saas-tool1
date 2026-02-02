@@ -14,7 +14,7 @@ import { toast } from 'sonner';
 
 type WizardStep = 'basics' | 'services' | 'audience' | 'voice' | 'operational';
 
-export function CreateProjectWizard() {
+export function CreateProjectWizard({ trigger }: { trigger?: React.ReactNode }) {
     const [open, setOpen] = useState(false);
     const [step, setStep] = useState<WizardStep>('basics');
     const [isLoading, setIsLoading] = useState(false);
@@ -31,7 +31,7 @@ export function CreateProjectWizard() {
     const [locations, setLocations] = useState<string[]>([]);
     const [locationInput, setLocationInput] = useState('');
 
-    const { reloadContext } = useProject();
+    const { reloadContext, selectProject } = useProject();
 
     const handleCreate = async () => {
         if (!name || !domain) {
@@ -41,7 +41,7 @@ export function CreateProjectWizard() {
 
         setIsLoading(true);
         try {
-            await createProject({
+            const newProject = await createProject({
                 name,
                 domain,
                 business: {
@@ -66,7 +66,15 @@ export function CreateProjectWizard() {
             });
 
             await reloadContext();
-            toast.success("Project created successfully!");
+
+            // Auto-switch to new project
+            if (newProject && newProject.id) {
+                selectProject(newProject.id);
+                toast.success(`Project "${newProject.name}" created and selected!`);
+            } else {
+                toast.success("Project created successfully!");
+            }
+
             setOpen(false);
             resetForm();
         } catch (error) {
@@ -112,15 +120,17 @@ export function CreateProjectWizard() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <div className="flex items-center gap-3 p-3 text-sm text-slate-300 hover:text-white hover:bg-slate-800 rounded-md cursor-pointer transition-colors border border-dashed border-slate-700 hover:border-slate-500">
-                    <div className="bg-indigo-600/20 p-2 rounded-md">
-                        <Plus className="h-4 w-4 text-indigo-400" />
+                {trigger || (
+                    <div className="flex items-center gap-3 p-3 text-sm text-slate-300 hover:text-white hover:bg-slate-800 rounded-md cursor-pointer transition-colors border border-dashed border-slate-700 hover:border-slate-500">
+                        <div className="bg-indigo-600/20 p-2 rounded-md">
+                            <Plus className="h-4 w-4 text-indigo-400" />
+                        </div>
+                        <div>
+                            <span className="font-medium block text-slate-200">New Project</span>
+                            <span className="text-xs text-slate-500">Launch Wizard</span>
+                        </div>
                     </div>
-                    <div>
-                        <span className="font-medium block text-slate-200">New Project</span>
-                        <span className="text-xs text-slate-500">Launch Wizard</span>
-                    </div>
-                </div>
+                )}
             </DialogTrigger>
             <DialogContent className="sm:max-w-[600px] h-[600px] flex flex-col">
                 <DialogHeader>

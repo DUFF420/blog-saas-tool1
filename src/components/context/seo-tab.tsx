@@ -27,7 +27,7 @@ export function SEOTab({ data, onChange }: SEOTabProps) {
                             <span>Enforce H-Tag Hierarchy</span>
                             <span className="font-normal text-slate-500 text-xs">Strictly nested H1 &rarr; H2 &rarr; H3 structure</span>
                         </Label>
-                        <Switch id="hTag" checked={data?.hTagHierarchy || false} onCheckedChange={() => toggle('hTagHierarchy')} />
+                        <Switch id="hTag" checked={data?.hTagHierarchy ?? true} onCheckedChange={() => toggle('hTagHierarchy')} />
                     </div>
 
                     <div className="flex items-center justify-between space-x-2">
@@ -35,7 +35,7 @@ export function SEOTab({ data, onChange }: SEOTabProps) {
                             <span>Short, Direct Intros</span>
                             <span className="font-normal text-slate-500 text-xs">Avoid fluff. Answer the query immediately.</span>
                         </Label>
-                        <Switch id="intro" checked={data?.shortIntro || false} onCheckedChange={() => toggle('shortIntro')} />
+                        <Switch id="intro" checked={data?.shortIntro ?? true} onCheckedChange={() => toggle('shortIntro')} />
                     </div>
 
                     <div className="flex items-center justify-between space-x-2">
@@ -43,7 +43,7 @@ export function SEOTab({ data, onChange }: SEOTabProps) {
                             <span>Scannable Layout</span>
                             <span className="font-normal text-slate-500 text-xs">Short paragraphs, bullet points, and bold text.</span>
                         </Label>
-                        <Switch id="scannable" checked={data?.scannableLayout || false} onCheckedChange={() => toggle('scannableLayout')} />
+                        <Switch id="scannable" checked={data?.scannableLayout ?? true} onCheckedChange={() => toggle('scannableLayout')} />
                     </div>
 
                     <div className="flex items-center justify-between space-x-2">
@@ -51,7 +51,7 @@ export function SEOTab({ data, onChange }: SEOTabProps) {
                             <span>Mandatory TL;DR Block</span>
                             <span className="font-normal text-slate-500 text-xs">3-5 bullet points immediately after intro. Optimized for AI Overviews.</span>
                         </Label>
-                        <Switch id="tldr" checked={data?.generateTLDR || false} onCheckedChange={() => toggle('generateTLDR')} />
+                        <Switch id="tldr" checked={data?.generateTLDR ?? true} onCheckedChange={() => toggle('generateTLDR')} />
                     </div>
 
                     <div className="flex items-center justify-between space-x-2">
@@ -59,7 +59,7 @@ export function SEOTab({ data, onChange }: SEOTabProps) {
                             <span>Semantic Keywords</span>
                             <span className="font-normal text-slate-500 text-xs">Focus on natural variations over density.</span>
                         </Label>
-                        <Switch id="semantic" checked={data?.semanticKeywords || false} onCheckedChange={() => toggle('semanticKeywords')} />
+                        <Switch id="semantic" checked={data?.semanticKeywords ?? true} onCheckedChange={() => toggle('semanticKeywords')} />
                     </div>
 
                     <div className="flex items-center justify-between space-x-2">
@@ -67,7 +67,7 @@ export function SEOTab({ data, onChange }: SEOTabProps) {
                             <span>Generate Topic Image</span>
                             <span className="font-normal text-slate-500 text-xs">Create one AI image based on the blog topic.</span>
                         </Label>
-                        <Switch id="image" checked={data?.includeImage || false} onCheckedChange={() => toggle('includeImage')} />
+                        <Switch id="image" checked={data?.includeImage ?? true} onCheckedChange={() => toggle('includeImage')} />
                     </div>
 
                     <div className="space-y-4 pt-4 border-t border-slate-100">

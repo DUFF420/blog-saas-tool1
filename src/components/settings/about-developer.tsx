@@ -2,6 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Globe, Instagram, Linkedin, Heart } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { APP_VERSION } from "@/lib/app-info";
 
 export function AboutDeveloper() {
     return (
@@ -45,7 +46,7 @@ export function AboutDeveloper() {
                 </div>
 
                 <div className="text-xs text-slate-400 pt-4 border-t border-indigo-100">
-                    Version 1.0.0 • Built with Next.js 15 & Tailwind CSS
+                    Version {APP_VERSION} • Built with Next.js 15 & Tailwind CSS
                 </div>
             </CardContent>
         </Card>

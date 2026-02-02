@@ -1,6 +1,6 @@
 'use client';
 
-import * as React from 'react';
+import React, { useState } from 'react';
 import { Check, ChevronsUpDown, Globe } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -78,4 +78,4 @@ export function ProjectSwitcher() {
     );
 }
 
-import { useState } from 'react';
+

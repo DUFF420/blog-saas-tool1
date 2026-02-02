@@ -70,40 +70,51 @@ export function ContextView() {
     }
 
     return (
-        <div className="space-y-6">
-            <div className="flex items-center justify-between">
-                <h2 className="text-3xl font-bold tracking-tight">Context Vault</h2>
-                <Button onClick={handleSave} disabled={isSaving}>
+        <div className="space-y-8 max-w-6xl mx-auto pb-20">
+            {/* Header Section */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-200 pb-6">
+                <div className="space-y-1">
+                    <h2 className="text-3xl font-bold tracking-tight text-slate-900">Context Vault</h2>
+                    <p className="text-slate-500 max-w-2xl text-sm leading-relaxed">
+                        Manage the brain of your project. This data trains the AI to understand your brand, audience, and operational rules.
+                    </p>
+                </div>
+                <Button onClick={handleSave} disabled={isSaving} className="w-full md:w-auto shadow-md hover:shadow-lg transition-all">
                     {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     Save Changes
                 </Button>
             </div>
 
-            <Tabs defaultValue="domain" className="space-y-4">
-                <TabsList>
-                    <TabsTrigger value="domain">Domain Info</TabsTrigger>
-                    <TabsTrigger value="brand">Brand & Voice</TabsTrigger>
-                    <TabsTrigger value="business">Business</TabsTrigger>
-                    <TabsTrigger value="seo">SEO Rules</TabsTrigger>
-                    <TabsTrigger value="styling">HTML / CSS</TabsTrigger>
-                    <TabsTrigger value="keywords">Keywords</TabsTrigger>
-                    <TabsTrigger value="ideas">Ideas</TabsTrigger>
-                    <TabsTrigger value="global">Global Context</TabsTrigger>
-                    <TabsTrigger
-                        value="smart"
-                        className="relative overflow-hidden text-indigo-600 data-[state=active]:bg-indigo-50 data-[state=active]:text-indigo-700 border border-transparent data-[state=active]:border-indigo-200 transition-all duration-300"
-                    >
-                        <span className="relative z-10 flex items-center gap-1">
-                            Smart Context
-                            <span className="flex h-1.5 w-1.5 rounded-full bg-indigo-500 animate-pulse" />
-                        </span>
-                        {/* Animated border effect overlay */}
-                        <span className="absolute inset-0 border-2 border-indigo-400 rounded-sm opacity-20 animate-pulse" />
-                    </TabsTrigger>
-                </TabsList>
+            <Tabs defaultValue="domain" className="space-y-8">
+                {/* Scrollable Tabs Navigation */}
+                <div className="w-full overflow-x-auto pb-1 scrollbar-hide">
+                    <TabsList className="w-max inline-flex h-11 items-center justify-start rounded-md bg-slate-100 p-1 text-slate-500">
+                        <TabsTrigger value="domain" className="px-4">Domain Info</TabsTrigger>
+                        <TabsTrigger value="brand" className="px-4">Brand & Voice</TabsTrigger>
+                        <TabsTrigger value="business" className="px-4">Business</TabsTrigger>
+                        <TabsTrigger value="seo" className="px-4">SEO Rules</TabsTrigger>
+                        <TabsTrigger value="styling" className="px-4">HTML / CSS</TabsTrigger>
+                        <TabsTrigger value="keywords" className="px-4">Keywords</TabsTrigger>
+                        <TabsTrigger value="ideas" className="px-4">Ideas</TabsTrigger>
+                        <TabsTrigger value="global" className="px-4">Global Context</TabsTrigger>
+                        <TabsTrigger
+                            value="smart"
+                            className="ml-2 px-4 relative overflow-hidden text-indigo-700 data-[state=active]:bg-white data-[state=active]:text-indigo-800 data-[state=active]:shadow-sm"
+                        >
+                            <span className="relative z-10 flex items-center gap-1.5 font-semibold">
+                                <span className="flex h-2 w-2 rounded-full bg-indigo-500 animate-pulse" />
+                                Smart Context
+                            </span>
+                        </TabsTrigger>
+                    </TabsList>
+                </div>
 
                 <TabsContent value="domain">
-                    <DomainTab data={context.domainInfo} onChange={(d) => updateSection('domainInfo', d)} />
+                    <DomainTab
+                        domain={activeProject.domain}
+                        data={context.domainInfo}
+                        onChange={(d) => updateSection('domainInfo', d)}
+                    />
                 </TabsContent>
                 <TabsContent value="brand">
                     <BrandTab data={context.brand} onChange={(d) => updateSection('brand', d)} />

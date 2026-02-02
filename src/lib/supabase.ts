@@ -34,9 +34,11 @@ export async function createClerkSupabaseClient() {
         });
     } catch (error: any) {
         // Log the error but don't crash the server. 
-        // Returning the base 'supabase' client allows the app to load, 
-        // though RLS might block certain data features until fixed.
-        console.error("Clerk-Supabase Auth Error:", error.message);
+        // Returning the base 'supabase' client allows the app to load.
+        // Ignore "Not Found" which happens when auth() is called without context (e.g. static gen or logged out sometimes)
+        if (error.message !== "Not Found") {
+            console.error("Clerk-Supabase Auth Error:", error.message);
+        }
         return supabase;
     }
 }

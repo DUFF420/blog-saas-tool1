@@ -1,5 +1,5 @@
 import { checkAccessStatus } from '@/actions/access';
-import { getAdminStats } from '@/actions/admin';
+import { getAdminStats, getFeatureRequests } from '@/actions/admin';
 import { redirect } from 'next/navigation';
 import { AdminDashboardClient } from '@/components/admin/admin-dashboard-client';
 
@@ -14,13 +14,17 @@ export default async function AdminPage() {
 
     // Fetch initial data server-side
     let initialData;
+    let initialRequests;
     try {
-        initialData = await getAdminStats();
+        [initialData, initialRequests] = await Promise.all([
+            getAdminStats(),
+            getFeatureRequests()
+        ]);
     } catch (error) {
         // If admin check passes but stats fail, something's wrong
         redirect('/admin/forbidden');
     }
 
     // Pass data to client component
-    return <AdminDashboardClient initialData={initialData} />;
+    return <AdminDashboardClient initialData={initialData} initialRequests={initialRequests} />;
 }
