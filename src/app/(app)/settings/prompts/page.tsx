@@ -7,7 +7,7 @@ export default async function PromptSettingsPage() {
     const status = await checkAccessStatus();
 
     if (status.role !== 'admin') {
-        redirect('/');
+        redirect('/dashboard');
     }
 
     return <SystemPromptsClient />;

@@ -67,6 +67,11 @@ This is a **SaaS Blogging Tool** built for scalability and SEO dominance. It is 
 *   **Environment Variables:** You MUST add Clerk keys (`NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`) to Vercel.
 *   **Database:** Supabase stays the same for both domains (single source of truth).
 
+### Critical DNS Setup (Common Failures)
+During the Feb 2026 migration, we discovered that `tool.theblogos.com` was missing the login box.
+*   **Cause:** We added the `tool` CNAME but forgot the **Clerk CNAME** (`clerk.theblogos.com` -> `frontend-api.clerk.services`).
+*   **Fix:** Ensure ALL 3 Clerk CNAMEs (`clerk`, `accounts`, `clkmail`) are added to the DNS provider. Without the `clerk` record, the Google Login button will be invisible.
+
 ### Common Issues
 *   **"Failed to fetch":** Usually means the dev server hung. Kill the process and run `npm run dev`.
 *   **"DialogContent requires DialogTitle":** Radix UI strictness. Add `<VisuallyHidden>` title or `sr-only` class.

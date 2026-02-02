@@ -44,7 +44,19 @@ We update `middleware.ts` to check the incoming `hostname`.
 4.  Both domains point to the *same* deployment.
 5.  **Enable Satellites (Clerk):** If using different parent domains (e.g. `site.com` and `tool.com`), Clerk Satellites must be configured. For subdomains (`site.com` and `tool.site.com`), standard Production mode is sufficient.
 
-## 4. Technical "Gotchas" & Fixes
+### 4. Required DNS Records (Reference)
+For the dual-domain setup to work with Clerk, you must have these 6 records in your DNS provider:
+
+| Type | Host | Target / Value | Purpose |
+| :--- | :--- | :--- | :--- |
+| **A** | `@` | `213.188.73.1` (or Vercel IP) | Root Domain (`theblogos.com`) |
+| **CNAME** | `tool` | `[id].vercel-dns.com.` | Tool Subdomain |
+| **CNAME** | `www` | `[id].vercel-dns.com.` | WWW Subdomain |
+| **CNAME** | `clerk` | `frontend-api.clerk.services` | **Critical for Login Box** |
+| **CNAME** | `accounts` | `accounts.clerk.services` | Clerk Backend |
+| **CNAME** | `clkmail` | `[unique].clerk.services` | Clerk Email |
+
+## 5. Technical "Gotchas" & Fixes
 
 ### A. Context Provider Duplication
 When moving routes into groups, the React component tree can sometimes lose track of Context Providers. 

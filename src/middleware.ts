@@ -28,6 +28,10 @@ export default clerkMiddleware(async (auth, req) => {
         if (!isPublicRoute(req)) {
             const { userId } = await auth();
             if (!userId) {
+                // Return 401 for API routes instead of redirecting to HTML login
+                if (req.nextUrl.pathname.startsWith('/api')) {
+                    return new NextResponse('Unauthorized', { status: 401 });
+                }
                 return NextResponse.redirect(new URL('/sign-in', req.url));
             }
         }
