@@ -47,11 +47,25 @@ This is a **SaaS Blogging Tool** built for scalability and SEO dominance. It is 
 *   **Accessibility:** Fixed `MobileNav` crash by adding a hidden `<SheetTitle>` for screen readers.
 *   **Build Integrity:** Rigorous `npm run build` testing to ensure zero TypeScript errors before deployment.
 
+### E. Subdomain Migration (The Scaling Phase)
+*   **What:** Separated Marketing (theblogos.com) from the SaaS Tool (tool.theblogos.com).
+*   **Method:** Used Next.js Route Groups (`(marketing)` vs `(app)`) and middleware rewrites.
+*   **Why:** To improve SEO and professionalism while keeping the SaaS dashboard private and secure.
+
+### F. Provider Consolidation (Stability Fix)
+*   **What:** Refactored the provider stack into `RootProviders.tsx`.
+*   **Why:** To resolve "useProject" context errors during the route restructuring and ensure stable hydration.
+
 ## 4. "How To" Shortcuts (For Future Devs)
 
+### Subdomain Setup
+*   **Middleware:** `src/middleware.ts` handles the `tool.` hostname logic.
+*   **DNS:** When adding a new environment, you MUST add a CNAME for `tool` pointing to Vercel.
+*   **Clerk:** Must be set to "Production" mode for live subdomains to work.
+
 ### Deployment
-*   **Environment Variables:** You MUST add Clerk keys (`NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`) to Vercel/Netlify.
-*   **Database:** Ensure `feature_requests` table exists (SQL: `supabase/migrations/create_feature_requests_table.sql`).
+*   **Environment Variables:** You MUST add Clerk keys (`NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`) to Vercel.
+*   **Database:** Supabase stays the same for both domains (single source of truth).
 
 ### Common Issues
 *   **"Failed to fetch":** Usually means the dev server hung. Kill the process and run `npm run dev`.

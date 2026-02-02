@@ -41,10 +41,22 @@ We update `middleware.ts` to check the incoming `hostname`.
     - We simulate this by checking for `tool.localhost:3000`.
 
 ## 3. Deployment Steps (Vercel)
-1.  Add `theblogos.com` to the project in Vercel settings.
-2.  Add `tool.theblogos.com` to the project in Vercel settings.
-3.  Both domains point to the *same* deployment.
-4.  The Middleware handles the rest automatically.
+4.  Both domains point to the *same* deployment.
+5.  **Enable Satellites (Clerk):** If using different parent domains (e.g. `site.com` and `tool.com`), Clerk Satellites must be configured. For subdomains (`site.com` and `tool.site.com`), standard Production mode is sufficient.
+
+## 4. Technical "Gotchas" & Fixes
+
+### A. Context Provider Duplication
+When moving routes into groups, the React component tree can sometimes lose track of Context Providers. 
+- **Fix:** Consolidate all global providers into a single Client Component (`src/components/providers/root-providers.tsx`) and wrap the `{children}` in `layout.tsx` once.
+- **Reference:** See `src/app/layout.tsx`.
+
+### B. Missing Static Assets (500 Errors)
+Subdomain rewrites can interfere with how static assets (SVG, PNG) are served if the server-side logic tries to run authentication checks on them.
+- **Fix:** Ensure 100% of static design assets (like `noise.svg` and `grid.svg`) are physically present in the `public/` root and allowed in `middleware.ts` by skipping Next.js internals.
+
+### C. Clerk Auth in Middleware
+The `tool.` subdomain requires strict auth. The middleware should first identify the hostname, then run the Clerk protection only for the `tool` side.
 
 ## Benefits
 *   **Security:** The "App" routes are literally inaccessible from the main domain.
