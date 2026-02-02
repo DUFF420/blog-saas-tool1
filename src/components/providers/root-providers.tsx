@@ -10,7 +10,7 @@ import { Project } from "@/types";
 interface RootProvidersProps {
     children: React.ReactNode;
     projects: Project[];
-    status: { hasAccess: boolean; role?: string };
+    status: { hasAccess: boolean; role?: string | null };
     isAppDomain: boolean;
 }
 

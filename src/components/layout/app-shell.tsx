@@ -14,7 +14,7 @@ export function AppShell({
     isAppDomain
 }: {
     children: React.ReactNode;
-    status: { hasAccess: boolean; role?: string };
+    status: { hasAccess: boolean; role?: string | null };
     isAppDomain: boolean;
 }) {
     // If we are NOT on the tool domain, render FULL WIDTH marketing layout
