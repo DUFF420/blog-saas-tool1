@@ -143,6 +143,19 @@
 
 .new-post-row {
   animation: new-post-highlight 3s ease-out forwards;
-  position: relative;
   z-index: 10;
+}
+
+@keyframes slow-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-slow-spin {
+  animation: slow-spin 60s linear infinite;
 }
