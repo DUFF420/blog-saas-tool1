@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 
-const PUBLIC_ROUTES = ['/sign-in', '/sign-up', '/access', '/onboarding', '/admin/forbidden'];
+const PUBLIC_ROUTES = ['/sign-in', '/sign-up', '/access', '/admin/forbidden'];
 const SESSION_COOKIE_NAME = 'site_access_token';
 const CHECK_INTERVAL_MS = 3000; // Check every 3 seconds
 

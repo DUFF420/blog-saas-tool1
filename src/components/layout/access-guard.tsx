@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 
-const PUBLIC_ROUTES = ['/sign-in', '/sign-up', '/access', '/onboarding', '/admin/forbidden'];
+const PUBLIC_ROUTES = ['/sign-in', '/sign-up', '/access', '/admin/forbidden'];
 
 interface AccessGuardProps {
     children: React.ReactNode;
