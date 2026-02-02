@@ -57,34 +57,21 @@ export async function verifyAccessCode(rawCode: unknown) {
         return { success: false, error: "Account Suspended. Contact Support." };
     }
 
-    // 3. Update DB to grant access
-    // We try to update first; if no row exists, we insert.
-    const { error: updateError, data: updated } = await supabase
+    // 3. Update DB to grant access (Atomic Upsert)
+    const user = await currentUser();
+    const { error: dbError } = await supabase
         .from('profiles')
-        .update({ has_access: true })
-        .eq('user_id', userId)
-        .select();
-
-    if (updateError) {
-        console.error("DB Update Error:", updateError);
-        return { success: false, error: "System Error. Try again." };
-    }
-
-    // Fallback: If no row updated, insert new profile
-    if (!updated || updated.length === 0) {
-        const user = await currentUser();
-        const { error: insertError } = await supabase.from('profiles').insert({
+        .upsert({
             user_id: userId,
-            email: user?.emailAddresses[0]?.emailAddress,
+            email: user?.emailAddresses[0]?.emailAddress || 'unknown',
             has_access: true,
             is_banned: false,
             role: 'customer'
-        });
+        }, { onConflict: 'user_id' });
 
-        if (insertError) {
-            console.error("DB Insert Error:", insertError);
-            return { success: false, error: "System Error. Try again." };
-        }
+    if (dbError) {
+        console.error("[AccessAction] Database Error:", dbError);
+        return { success: false, error: "System Error. Try again." };
     }
 
     // ✅ SECURITY: Hardened Session Cookie
