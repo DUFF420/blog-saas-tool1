@@ -22,13 +22,21 @@ export function RootProviders({
 }: RootProvidersProps) {
     return (
         <ProjectProvider initialProjects={projects}>
-            <AccessGuard hasAccess={status.hasAccess}>
+            {isAppDomain ? (
+                <AccessGuard hasAccess={status.hasAccess}>
+                    <GenerationProvider>
+                        <AppShell status={status} isAppDomain={isAppDomain}>
+                            {children}
+                        </AppShell>
+                    </GenerationProvider>
+                </AccessGuard>
+            ) : (
                 <GenerationProvider>
                     <AppShell status={status} isAppDomain={isAppDomain}>
                         {children}
                     </AppShell>
                 </GenerationProvider>
-            </AccessGuard>
+            )}
             <Toaster />
         </ProjectProvider>
     );
